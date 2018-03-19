@@ -1,0 +1,175 @@
+** TODO review http://www.erlang-factory.com/upload/presentations/294/MasterlessDistributedComputingwithRiakCore-RKlophaus.pdf
+** TODO read http://blog.carlosgaldino.com/consistent-hashing.html
+** TODO look for a node vs vnode image
+** TODO prepare demo
+** TODO shrink advanced topics
+
+* BeamBA Meetup // riak_core
+
+- [[https://twitter.com/@folano_][twitter.com/@folano_]]
+
+- [[https://github.com/facundoolano][github.com/facundoolano]]
+
+- [[https://github.com/lambdaclass][github.com/lambdaclass]]
+
+- [[https://github.com/lambdaclass/riak_core_tutorial][github.com/lambdaclass/riak_core_tutorial]]
+
+- [[http://buzzconf.org][buzzconf.org]]
+
+* What is riak_core?
+
+- Erlang/OTP application developed by Basho.
+
+- Toolkit for building distributed, scalable,
+  fault-tolerant applications.
+
+- Used by the Riak database to distribute data and scale.
+
+- Exposes Amazon's Dyamo architecture as a reusable library.
+
+* What's riak_core good for?
+
+- Distributed data stores.
+
+- Routing of operations ensuring data locality.
+
+- Any application that can benefit from decentralized
+  distribution of work.
+
+* Basho is dead, long live riak_core!
+
+- Basho was put into receivership in 2017.
+
+- Community took over maintenance and development of the projects.
+  - Join the post-riak slack.
+
+- Documentation was disperse and outdated.
+  - We wrote riak_core_tutorial to consolidate the information and
+    help run riak_core in a modern Erlang setup.
+
+* Amazon Dynamo
+
+- "Dynamo: Amazon’s Highly Available Key-value Store" (2007)
+- Used by multiple internal Amazon services
+(not the same as the commercial DynamoBD service).
+
+*Design needs:*
+- Reliability + Scalability = Availability > Consistency
+- "Always writeable store" (no updates are rejected due to failures)
+- Simple key/value Interfaces (no need for relational queries).
+- Latency sensitive applications (< 300ms for 99.9% of the requests).
+
+** TODO Add summary table from paper
+** TODO consider removing what's duplicated in previous list
+
+* Consistent hashing
+
+- The output range of the hash is treated as a "ring".
+
+- The ring is partitioned and distributed among nodes.
+
+- Each data item is assigned to a node by hashing its key.
+
+** TODO include a simple image (without vnodes)
+
+
+* Consistent hashing (cont.)
+** TODO maybe smaller version of previous image
+
+*Advantages*:
+- A single node can resolve an operation on a given a key.
+- Adding or removing nodes only affect neighbors in the ring.
+
+*Disadvantages*:
+- Non-uniform data and load distribution.
+
+* Nodes and Virtual Nodes
+
+Each node ois responsible for more than one virtual node,
+i.e. more than one segment of the ring.
+
+#+ATTR_ORG: :width 800
+[[./ring.png]]
+
+* Nodes and Virtual Nodes (cont.)
+
+*Advantages*:
+
+- When a node becomes unavailable, the load is dispersed evenly
+ to the rest.
+
+- When node comes back online, takes load evenly from the rest.
+
+- Nodes can be assigned vnodes according to its capacity.
+
+* Interlude: Erlang/OTP behaviors
+
+- Implement the generic parts of common patterns and defer the
+  specific parts to a callback module.
+
+- Similar to abstract classes with template methods in OOP land.
+
+- Examples:
+  - gen_server implements the server in a client/server relation
+  - gen_fsm implements a finite-state machine process
+
+* riak_core_vnode behavior
+
+- Worker process that receives commands.
+
+- Erlang behavior where you fill your application-specific logic.
+
+- Implement PUT and GET commands for a Key/Value store:
+#+BEGIN_SRC erlang
+-behaviour(riak_core_vnode).
+
+init([Partition]) ->
+  State = #{partition => Partition, data => #{}},
+  {ok, State}.
+
+handle_command({put, Key, Value}, _Sender, State) ->
+  Data = maps:get(data, State),
+  NewData = Data#{Key => Value},
+  {reply, ok, State#{data => NewData}};
+
+handle_command({get, Key}, _Sender, State) ->
+  Data = maps:get(data, State),
+  Result = maps:get(Key, Data, not_found),
+  {reply, Result, State}.
+#+END_SRC
+
+- Call the PUT command with a Key/Value pair:
+#+BEGIN_SRC erlang
+put(Key, Value) ->
+  DocIdx = riak_core_util:chash_key({<<"rc_example">>, term_to_binary(Key)}),
+  PrefList = riak_core_apl:get_apl(DocIdx, 1, rc_example),
+  [IndexNode] = PrefList,
+  riak_core_vnode_master:sync_spawn_command(IndexNode, Command, rc_example_vnode_master).
+#+END_SRC
+
+* Demo!
+
+- Start three Erlang nodes.
+
+- Join the nodes into a riak_core cluster.
+
+- Try the GET/PUT commands of the example Key/Value store.
+
+* Advanced Topics
+
+- Coverage commands
+  - Commands that require querying all nodes and joining the results.
+  - Example: list all keys in the Key/Value store.
+
+- Redundancy and fault-tolerance
+  - Send commands to N nodes.
+  - Wait for R nodes to consider a read successful.
+  - Wait for W nodes to consider a write successful.
+
+- Handoff
+  - *Ownership*: Redistribute partitions when a physical node is added
+    or removed.
+  - *Hinted*: Send back data that was temporarily stored in a secondary
+    vnode.
+
+* Questions?
