@@ -1,8 +1,4 @@
 ** TODO review http://www.erlang-factory.com/upload/presentations/294/MasterlessDistributedComputingwithRiakCore-RKlophaus.pdf
-** TODO read http://blog.carlosgaldino.com/consistent-hashing.html
-** TODO look for a node vs vnode image
-** TODO prepare demo
-** TODO shrink advanced topics
 
 * BeamBA Meetup // riak_core
 
@@ -49,18 +45,30 @@
 
 * Amazon Dynamo
 
-- "Dynamo: Amazon’s Highly Available Key-value Store" (2007)
-- Used by multiple internal Amazon services
-(not the same as the commercial DynamoBD service).
+[[https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf]["Dynamo: Amazon’s Highly Available Key-value Store" (2007)]]
 
-*Design needs:*
-- Reliability + Scalability = Availability > Consistency
-- "Always writeable store" (no updates are rejected due to failures)
-- Simple key/value Interfaces (no need for relational queries).
-- Latency sensitive applications (< 300ms for 99.9% of the requests).
+- Availability > Consistency
+  - No updates are rejected due to failures.
 
-** TODO Add summary table from paper
-** TODO consider removing what's duplicated in previous list
+- Simple key/value Interfaces
+  - No need for relational queries.
+
+- Latency sensitive applications
+  - < 300ms for 99.9% of the requests.
+
+* Amazon Dynamo (cont.)
+
+
+  | *Problem*          | *Technique*       | *Advantage*              |
+  |--------------------+-------------------+--------------------------|
+  | Partitioning       | Consistent        | Incremental Scalability, |
+  |                    | hashing           | Heterogeinity            |
+  |--------------------+-------------------+--------------------------|
+  | Handling temporary | Sloppy quorum and | High availability,       |
+  | failures           | hinted handoff    | Durability               |
+  |--------------------+-------------------+--------------------------|
+  | Membership         | Gossip            | Symmetry,                |
+  |                    |                   | decentralization         |
 
 * Consistent hashing
 
@@ -70,14 +78,18 @@
 
 - Each data item is assigned to a node by hashing its key.
 
-** TODO include a simple image (without vnodes)
-
+#+ATTR_ORG: :width 600
+[[./hash.png]]
+[[http://blog.carlosgaldino.com/consistent-hashing.html][
+image source]]
 
 * Consistent hashing (cont.)
-** TODO maybe smaller version of previous image
+#+ATTR_ORG: :width 400
+[[./hash.png]]
 
 *Advantages*:
-- A single node can resolve an operation on a given a key.
+- Operations can be executed without node coordination.
+
 - Adding or removing nodes only affect neighbors in the ring.
 
 *Disadvantages*:
@@ -90,6 +102,8 @@ i.e. more than one segment of the ring.
 
 #+ATTR_ORG: :width 800
 [[./ring.png]]
+
+[[http://www.erlang-factory.com/upload/presentations/294/MasterlessDistributedComputingwithRiakCore-RKlophaus.pdf][image source]]
 
 * Nodes and Virtual Nodes (cont.)
 
