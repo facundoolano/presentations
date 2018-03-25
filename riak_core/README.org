@@ -12,10 +12,10 @@
 
 * What is riak_core?
 
-- Erlang/OTP application developed by Basho.
-
 - Toolkit for building distributed, scalable,
   fault-tolerant applications.
+
+- Erlang/OTP application developed by Basho.
 
 - Used by the Riak database to distribute data and scale.
 
@@ -65,25 +65,24 @@
   | Handling temporary | Sloppy quorum and | High availability,       |
   | failures           | hinted handoff    | Durability               |
   |--------------------+-------------------+--------------------------|
-  | Membership         | Gossip            | Symmetry,                |
-  |                    |                   | decentralization         |
+  | Membership and     | Gossip            | Symmetry,                |
+  | failure detection  |                   | decentralization         |
 
 * Consistent hashing
+
+- Each data item is assigned to a node by hashing its key.
 
 - The output range of the hash is treated as a "ring".
 
 - The ring is partitioned and distributed among nodes.
 
-- Each data item is assigned to a node by hashing its key.
-
 #+ATTR_ORG: :width 600
-[[./hash.png]]
-[[http://blog.carlosgaldino.com/consistent-hashing.html][
-image source]]
+     [[./hash.png]]
+[[http://blog.carlosgaldino.com/consistent-hashing.html][image source]]
 
 * Consistent hashing (cont.)
 #+ATTR_ORG: :width 400
-[[./hash.png]]
+    [[./hash2.png]]
 
 *Advantages*:
 - Operations can be executed without node coordination.
@@ -99,14 +98,15 @@ Each node is responsible for more than one virtual node,
 i.e. more than one segment of the ring.
 
 #+ATTR_ORG: :width 800
-[[./ring.png]]
+    [[./ring.png]]
 
 [[http://www.erlang-factory.com/upload/presentations/294/MasterlessDistributedComputingwithRiakCore-RKlophaus.pdf][image source]]
 
 * Nodes and Virtual Nodes (cont.)
+#+ATTR_ORG: :width 400
+    [[./ring.png]]
 
 *Advantages*:
-
 - When a node becomes unavailable, the load is dispersed evenly
  to the rest.
 
@@ -114,6 +114,10 @@ i.e. more than one segment of the ring.
   rest.
 
 - Nodes can be assigned vnodes according to its capacity.
+
+* Questions?
+
+  Before we move on.
 
 * Interlude: Erlang/OTP behaviors
 
@@ -130,36 +134,38 @@ i.e. more than one segment of the ring.
 
 * riak_core_vnode behavior
 
-- Worker process that receives commands.
-
 - Erlang behavior where you fill your application-specific logic.
+
+- Worker process that receives commands.
 
 - Implement PUT and GET commands for a Key/Value store:
 #+BEGIN_SRC erlang
--behaviour(riak_core_vnode).
+  -behaviour(riak_core_vnode).
 
-init([Partition]) ->
-  State = #{partition => Partition, data => #{}},
-  {ok, State}.
+  init([_Partition]) ->
+    State = #{},
+    {ok, State}.
 
-handle_command({put, Key, Value}, _Sender, State) ->
-  Data = maps:get(data, State),
-  NewData = Data#{Key => Value},
-  {reply, ok, State#{data => NewData}};
+  handle_command({put, Key, Value}, _Sender, State) ->
+    NewState = State#{Key => Value},
+    {reply, ok, NewState};
 
-handle_command({get, Key}, _Sender, State) ->
-  Data = maps:get(data, State),
-  Result = maps:get(Key, Data, not_found),
-  {reply, Result, State}.
+  handle_command({get, Key}, _Sender, State) ->
+    Result = maps:get(Key, State, not_found),
+    {reply, Result, State}.
 #+END_SRC
 
 - Call the PUT command with a Key/Value pair:
 #+BEGIN_SRC erlang
-put(Key, Value) ->
-  DocIdx = riak_core_util:chash_key({<<"rc_example">>, term_to_binary(Key)}),
-  PrefList = riak_core_apl:get_apl(DocIdx, 1, rc_example),
-  [IndexNode] = PrefList,
-  riak_core_vnode_master:sync_spawn_command(IndexNode, Command, rc_example_vnode_master).
+  put(Key, Value) ->
+    %% apply hash function to the key
+    DocIdx = riak_core_util:chash_key({<<"rc_example">>, term_to_binary(Key)}),
+    %% obtain preferred vnode to handle that key
+    %% apl = active preference list
+    PrefList = riak_core_apl:get_apl(DocIdx, 1, rc_example),
+    [IndexNode] = PrefList,
+    %% send command to the preferred vnode
+    riak_core_vnode_master:sync_spawn_command(IndexNode, Command, rc_example_vnode_master).
 #+END_SRC
 
 * Demo!
