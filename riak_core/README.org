@@ -76,7 +76,7 @@
 
 - The ring is partitioned and distributed among nodes.
 
-#+ATTR_ORG: :width 600
+#+ATTR_ORG: :width 800
      [[./hash.png]]
 [[http://blog.carlosgaldino.com/consistent-hashing.html][image source]]
 
@@ -194,3 +194,6 @@ i.e. more than one segment of the ring.
     vnode.
 
 * Questions?
+
+
+For more details check the [[https://github.com/lambdaclass/riak_core_tutorial][riak_core tutorial]].
