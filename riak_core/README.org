@@ -81,7 +81,7 @@
 [[http://blog.carlosgaldino.com/consistent-hashing.html][image source]]
 
 * Consistent hashing (cont.)
-#+ATTR_ORG: :width 400
+#+ATTR_ORG: :width 600
     [[./hash2.png]]
 
 *Advantages*:
@@ -103,16 +103,14 @@ i.e. more than one segment of the ring.
 [[http://www.erlang-factory.com/upload/presentations/294/MasterlessDistributedComputingwithRiakCore-RKlophaus.pdf][image source]]
 
 * Nodes and Virtual Nodes (cont.)
-#+ATTR_ORG: :width 400
+#+ATTR_ORG: :width 600
     [[./ring.png]]
 
 *Advantages*:
 - When a node becomes unavailable, the load is dispersed evenly
  to the rest.
-
 - When a node comes back online, it takes load evenly from the
   rest.
-
 - Nodes can be assigned vnodes according to its capacity.
 
 * Questions?
@@ -134,11 +132,15 @@ i.e. more than one segment of the ring.
 
 * riak_core_vnode behavior
 
+- riak_core representation of a virtual node
+
 - Erlang behavior where you fill your application-specific logic.
 
 - Worker process that receives commands.
 
-- Implement PUT and GET commands for a Key/Value store:
+* riak_core_vnode behavior (cont.)
+
+Implement PUT and GET commands for a Key/Value store:
 #+BEGIN_SRC erlang
   -behaviour(riak_core_vnode).
 
@@ -155,15 +157,20 @@ i.e. more than one segment of the ring.
     {reply, Result, State}.
 #+END_SRC
 
-- Call the PUT command with a Key/Value pair:
+
+* riak_core_vnode behavior (cont. cont.)
+
+Call the PUT command with a Key/Value pair:
 #+BEGIN_SRC erlang
   put(Key, Value) ->
     %% apply hash function to the key
     DocIdx = riak_core_util:chash_key({<<"rc_example">>, term_to_binary(Key)}),
+
     %% obtain preferred vnode to handle that key
     %% apl = active preference list
     PrefList = riak_core_apl:get_apl(DocIdx, 1, rc_example),
     [IndexNode] = PrefList,
+
     %% send command to the preferred vnode
     riak_core_vnode_master:sync_spawn_command(IndexNode, Command, rc_example_vnode_master).
 #+END_SRC
