@@ -172,6 +172,7 @@ Call the PUT command with a Key/Value pair:
     [IndexNode] = PrefList,
 
     %% send command to the preferred vnode
+    Command = {put, Key, Value},
     riak_core_vnode_master:sync_spawn_command(IndexNode, Command, rc_example_vnode_master).
 #+END_SRC
 
