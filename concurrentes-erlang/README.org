@@ -1,0 +1,234 @@
+* Erlang: Concurrencia y tolerancia a fallos
+
+    # TODO logo
+
+    - Diseñado por Joe Armstrong en Ericsson (1986)
+
+    - Usado originalmente para switches de telefonía
+
+    - Implementa sistemas *tolerantes a fallas*
+      - funcional
+      - concurrente
+      - observable
+      - distribuido
+
+# Todas las decisiones de diseño obedecen al objtivo de implementar sistemas
+# tolerantes a fallas
+
+* Erlang es un lenguaje funcional...
+
+    - Las variables son inmutables
+
+    - No hay sentencias, solo expresiones
+
+    - Se usa recursividad para controlar el flujo
+
+
+* ...pero es pragmático
+
+ No intenta ser "puro"
+
+ - Las funciones pueden tener efectos secundarios
+   - system calls
+   - ejecutar código nativo C (o Rust!)
+   - ejecutar programas externos
+
+ - Hay estructuras que habilitan estado mutable global (en forma controlada)
+   - Almacenamiento clave-valor en memoria y disco (ETS/DETS)
+   - Base de datos distribuida (Mnesia)
+   - Valores atómicos, contadores
+   - datos globales no copiados (persistent terms)
+
+# nació y maduró mediante su aplicación en la industria
+
+* Ejemplo (recursivo)
+
+#+begin_src erlang
+    -module(example1).
+
+    -export([list_increase/1]).
+
+    %% Incrementar en 1 todos los elementos de la lista.
+    list_increase(List) ->
+        list_increase(List, []).
+
+    list_increase([N | Rest], Result) ->
+        list_increase(Rest, [N + 1 | Result]);
+
+    list_increase([], Result) ->
+        lists:reverse(Result).
+#+end_src
+
+* Ejemplo (funciones de alto orden)
+
+#+begin_src erlang
+    -module(example2).
+
+    -export([list_increase/1]).
+
+    %% Incrementar en 1 todos los elementos de la lista.
+    list_increase(List) ->
+        lists:map(fun(N) -> N + 1 end, List).
+#+end_src
+
+* Ejemplo (comprensión de listas)
+
+#+begin_src erlang
+    -module(example3).
+
+    -export([list_increase/1]).
+
+    %% Incrementar en 1 todos los elementos de la lista.
+    list_increase(List) ->
+        [N + 1 || N <- List].
+#+end_src
+
+* Concurrencia: Actor model
+
+- Los programas de Erlang consisten en procesos concurrentes
+  # En vez de una función main, cada proceso ejecuta su propia funcion (a veces en loop)
+  # No ejecutamos un programa, ejecutamos el Runtime de erlang con un conjunto de procesos iniciales
+
+- Los procesos son livianos
+  - rápidos de inicializar y terminar
+  - Se usan tantos como sea necesario
+
+- Los procesos están aislados
+  - Solo se comunican mediante envío de mensajes
+  - Cada proceso tiene un "mailbox" donde se acumulan mensajes recibidos
+  - Los mensajes son valores copiados, no hay memoria compartida
+    - no hay locks, mutexes, semaphores
+
+* Concurrencia: primitivas
+
+#+begin_src erlang
+  %% Obtener el id del proceso actual (el de la shell)
+  > ParentPid = self().
+  <0.84.0>
+
+  %% Iniciar un nuevo proceso con spawn
+  > spawn(fun() ->
+            %% Enviar un mensaje al proceso de la shell
+            ParentPid ! {self(), hello_world}
+          end).
+  <0.88.0>
+
+  %% Recibir (bloqueando) un mensaje con el patrón {From, Message}
+  > receive
+      {From, Message} ->
+        %% Imprimir el valor recibido por stdout
+        io:format("Received: ~p from ~p \n", [Message, From])
+    end.
+  Received: hello_world from <0.88.0>
+  ok
+
+#+end_src
+
+* Demo: calc_server
+
+# TODO
+
+* Procesos como elemento de diseño
+
+  - Como las go-routinas, pero no exactamente
+    - En erlang se modela el actor (proceso) y no el canal (mailbox)
+
+  - Como POO, pero no exactamente
+    - Cercano a la idea original de POO (Smalltalk)
+    - Los procesos son baratos, pero no es práctico uno por cada entidad del dominio
+
+  - Siempre se trata de tolerancia a fallos!
+    - separar componentes para aislar y controlar sus modos de error
+    - "Encapsulate what may crash"
+
+* VM: Modelo de memoria
+
+   - Cada proceso tiene su propio espacio de memoria
+     - realiza su propio garbage collection
+     - la mayoría guarda poco estado propio
+     - en muchos casos mueren antes de necesitar recolectar basura
+
+   - Los valores son copiados al enviar mensajes
+     - No hay que lidiar con estado compartido
+     - se eliminan los /data races/
+
+   - Erlang provee mecanismos externos para evitar la copia de grandes datos
+     - pasaje por referencia de binarios
+     - Almacenamiento clave-valor
+     - Términos globales
+
+* VM: Scheduler
+
+# TODO
+
+* Concurrencia robusta: links
+
+* Demo: links
+
+* Concurrencia robusta: trap_exit
+
+* Demo: supervisor
+
+* Concurrencia robusta: monitors
+
+* Behaviors
+
+* Ejemplo: calc_server como gen_server
+
+* Supervisores
+
+* Supervisores: estrategias
+
+* Ejemplo: calc_server_sup
+
+* Supervisores: árboles de supervisión
+
+#+ATTR_ORG: :width 1024
+  [[./suptree.png]]
+
+  [[https://adoptingerlang.org/docs/development/supervision_trees/][Fuente]]
+
+  - Los componentes se inician en profundidad, izquierda a derecha
+  - Los errores se propagan en profundidad, derecha a izquierda
+  - Cerca de la raíz están las "garantías" del sistema, lo que no puede fallar
+  - Cerca de las hojas lo más frágil, lo que esperamos que falle
+  - No se proveen garantías sobre la disponibilidad de sistemas externos (DB)
+
+
+* El Zen de Erlang: let it crash
+
+  Los crashes son inevitables: si los controlamos se convierten en una herramienta.
+
+    - "let it crash" / dejalo que se rompa
+      - la mayoría de los errores son transitorios ("heisenbugs")
+      - en vez de tratar de predecirlos y manejarlos -> instruir al sistema para recuperarse
+      - en vez de escribir código defensivo -> dejá que el proceso muera y el supervisor lo reinicie
+      - el manejo de errores no está en la lógica sino en la arquitectura de la aplicación (supervisors y applications)
+
+* Aún hay más
+
+    - Erlang distribuido
+    - Hot code reloading
+    - Introspección, observabilidad, tracing
+    - Elixir
+
+* Fuentes
+
+   [[https://ferd.ca/the-zen-of-erlang.html][The Zen of Erlang]]
+
+   [[https://learnyousomeerlang.com/][Learn You Some Erlang for Great Good]]
+      [[https://learnyousomeerlang.com/the-hitchhikers-guide-to-concurrency][The Hitchhiker's Guide to Concurrency]]
+      [[https://learnyousomeerlang.com/errors-and-processes][Errors and Processes]]
+      [[https://learnyousomeerlang.com/supervisors][Who Supervises The Supervisors?]]
+
+   [[https://ferd.ca/an-open-letter-to-the-erlang-beginner-or-onlooker.html][An Open Letter to the Erlang Beginner (or Onlooker)]]
+
+   [[http://jlouisramblings.blogspot.com/2013/01/how-erlang-does-scheduling.html][How Erlang does scheduling]]
+
+   [[http://jlouisramblings.blogspot.com/2013/10/embrace-copying.html][Embrace Copying!]]
+
+   [[https://adoptingerlang.org/docs/development/supervision_trees/][Adopting Erlang - Supervision trees]]
+
+   [[http://spawnedshelter.com/][Spawned Shelter!]]
+
+* ¿Preguntas?
