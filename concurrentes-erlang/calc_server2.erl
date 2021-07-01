@@ -1,27 +1,30 @@
--module(calc_server).
+-module(calc_server2).
 
--export([start/0, add/2, divide/2, get/1]).
-
+-export([start_link/0, add/1, divide/1, get/0]).
 
 %% API
-start() -> spawn(fun() -> loop(0) end).
+start_link() ->
+    Pid = spawn_link(fun() -> loop(0) end),
+    register(calc_server, Pid),
+    Pid.
 
-add(ServerPid, N) ->
-    ServerPid ! {add, N},
-    ok.
+add(N) -> send({add, N}).
 
-divide(ServerPid, N) ->
-    ServerPid ! {divide, N},
-    ok.
+divide(N) -> send({divide, N}).
 
-get(ServerPid) ->
-    ServerPid ! {get, self()},
+get() ->
+    send({get, self()}),
     receive
         {calc_server_result, Value} ->
             Value
     after 1000 ->
             timeout
     end.
+
+send(Message) ->
+    ServerPid = whereis(calc_server),
+    ServerPid ! Message,
+    ok.
 
 %% Server
 

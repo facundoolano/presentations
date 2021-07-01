@@ -169,9 +169,7 @@ DEMO
 
 # TODO monitor
 
-* Demo: supervisor
-
-# nota: no vamos a mantener el estado
+* Demo: calc_sup
 
 * Behaviors
 
@@ -181,7 +179,7 @@ DEMO
 
 * Supervisores: estrategias
 
-* Ejemplo: calc_server_sup
+* Ejemplo: calc_sup como supervisor
 
 * Supervisores: árboles de supervisión
 
