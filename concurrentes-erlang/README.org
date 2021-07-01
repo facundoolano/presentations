@@ -239,21 +239,21 @@ DEMO
 
 * Fuentes
 
-   [[https://ferd.ca/the-zen-of-erlang.html][The Zen of Erlang]]
+   - [[https://ferd.ca/the-zen-of-erlang.html][The Zen of Erlang]]
 
-   [[https://learnyousomeerlang.com/][Learn You Some Erlang for Great Good]]
-      [[https://learnyousomeerlang.com/the-hitchhikers-guide-to-concurrency][The Hitchhiker's Guide to Concurrency]]
-      [[https://learnyousomeerlang.com/errors-and-processes][Errors and Processes]]
-      [[https://learnyousomeerlang.com/supervisors][Who Supervises The Supervisors?]]
+   - [[https://learnyousomeerlang.com/][Learn You Some Erlang for Great Good]]
+      - [[https://learnyousomeerlang.com/the-hitchhikers-guide-to-concurrency][The Hitchhiker's Guide to Concurrency]]
+      - [[https://learnyousomeerlang.com/errors-and-processes][Errors and Processes]]
+      - [[https://learnyousomeerlang.com/supervisors][Who Supervises The Supervisors?]]
 
-   [[https://ferd.ca/an-open-letter-to-the-erlang-beginner-or-onlooker.html][An Open Letter to the Erlang Beginner (or Onlooker)]]
+   - [[https://ferd.ca/an-open-letter-to-the-erlang-beginner-or-onlooker.html][An Open Letter to the Erlang Beginner (or Onlooker)]]
 
-   [[http://jlouisramblings.blogspot.com/2013/01/how-erlang-does-scheduling.html][How Erlang does scheduling]]
+   - [[http://jlouisramblings.blogspot.com/2013/01/how-erlang-does-scheduling.html][How Erlang does scheduling]]
 
-   [[http://jlouisramblings.blogspot.com/2013/10/embrace-copying.html][Embrace Copying!]]
+   - [[http://jlouisramblings.blogspot.com/2013/10/embrace-copying.html][Embrace Copying!]]
 
-   [[https://adoptingerlang.org/docs/development/supervision_trees/][Adopting Erlang - Supervision trees]]
+   - [[https://adoptingerlang.org/docs/development/supervision_trees/][Adopting Erlang - Supervision trees]]
 
-   [[http://spawnedshelter.com/][Spawned Shelter!]]
+   - [[http://spawnedshelter.com/][Spawned Shelter!]]
 
 * ¿Preguntas?
