@@ -2,18 +2,28 @@
 
 -export([start_link/0, add/1, divide/1, get/0]).
 
+
 %% API
 start_link() ->
+    %% iniciar servidor con un link al proceso actual
+    %% cuando el servidor muera, este proceso recibirá una señal de exit
     Pid = spawn_link(fun() -> loop(0) end),
+
+    %% darle un nombre global al proceso para poder mandarle mensajes
+    %% sin conocer su Pid
     register(calc_server, Pid),
     Pid.
 
-add(N) -> send({add, N}).
+add(N) ->
+    calc_server ! {add, N},
+    ok.
 
-divide(N) -> send({divide, N}).
+divide(N) ->
+    calc_server ! {divide, N},
+    ok.
 
 get() ->
-    send({get, self()}),
+    calc_server ! {get, self()},
     receive
         {calc_server_result, Value} ->
             Value
@@ -21,10 +31,6 @@ get() ->
             timeout
     end.
 
-send(Message) ->
-    ServerPid = whereis(calc_server),
-    ServerPid ! Message,
-    ok.
 
 %% Server
 
