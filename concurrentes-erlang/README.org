@@ -27,6 +27,7 @@
 * ...pero es pragmático
 
  No intenta ser "puro"
+   # Nació y maduró mediante su aplicación en la industria
 
  - Las funciones pueden tener efectos secundarios
    - system calls
@@ -38,8 +39,6 @@
    - Base de datos distribuida (Mnesia)
    - Valores atómicos, contadores
    - datos globales no copiados (persistent terms)
-
-# nació y maduró mediante su aplicación en la industria
 
 * Ejemplo (recursivo)
 
@@ -159,7 +158,20 @@ DEMO
 
 * VM: Scheduler
 
-# TODO
+  - Erlang hace *preemptive scheduling*
+    - se parece más a un S.O. que a otros lenguajes
+
+  - Ejecuta un scheduler por cada núcleo de la computadora
+    - El scheduler asigna un numero de "reducciones" a cada proceso
+    - Todas las operaciones consumen reducciones
+    - La ejecución del proceso se interrumpe cuando terminan las reducciones
+      y se pasa al siguiente proceso en la cola
+
+  - Erlang optimiza latencia sobre throughput
+    - La tarea del scheduler implica un costo extra
+    - Se garantiza un reparto "justo" de los recursos
+    - Un proceso lento/trabajoso no puede afectar a los demás
+    - Los sistemas suelen degradar "graciosamente" ante mayor carga
 
 * Concurrencia robusta
 
