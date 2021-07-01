@@ -126,7 +126,7 @@
 
 * Demo: calc_server
 
-# TODO
+DEMO
 
 * Procesos como elemento de diseño
 
@@ -161,15 +161,17 @@
 
 # TODO
 
-* Concurrencia robusta: links
+* Concurrencia robusta
 
-* Demo: links
+# TODO link
 
-* Concurrencia robusta: trap_exit
+# TODO link + trap_exit
+
+# TODO monitor
 
 * Demo: supervisor
 
-* Concurrencia robusta: monitors
+# nota: no vamos a mantener el estado
 
 * Behaviors
 
