@@ -163,13 +163,26 @@ DEMO
 
 * Concurrencia robusta
 
-# TODO link
+  Los procesos son terminados en la presencia de errores.
 
-# TODO link + trap_exit
+  Además del manejo tradicional (try/catch), Erlang para propagar
+  o delegar el manejo de errores hacia otros procesos.
 
-# TODO monitor
+    - *Links*
+      # enlazar dos procesos de forma que la terminación de uno se propaga
+      # hacia el otro. Permite terminar grupos de procesos en conjunto.
+
+    - *Traps*
+      # capturar las señales de terminación para actuar, por ejemplo
+      # reemplazando el proceso con uno nuevo.
+
+    - *Monitors*
+      # registrarse un proceso para recibir mensajes ante la
+      # terminación de otro.
 
 * Demo: calc_sup
+
+DEMO
 
 * Behaviors
 
