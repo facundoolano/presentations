@@ -198,7 +198,34 @@ DEMO
 
 * Behaviors
 
+  - OTP: Open Telecom Platform
+    - Framework para hacer aplicaciones Erlang "estándar"
+
+  - Behaviors
+    - Mecanismo de reuso de código
+    - Permiten separar la parte genérica/reusable de un problema
+      de lo específico
+    - Similares a clases abstractas en POO
+
+  - Alguns behaviors provistos por OTP
+      - gen_server
+      - gen_event
+      - gen_statem
+      - supervisor
+      - application
+
 * Ejemplo: calc_server como gen_server
+
+  Lo particular:
+    mantener un número y exponer operaciones para modificarlo
+
+  Lo genérico:
+    Iniciar un proceso nombrado, procesar recursivamente mensajes
+    ingresantes, responder consultas
+
+#+begin_src erlang
+%% TODO
+#+end_src
 
 * Supervisores
 
