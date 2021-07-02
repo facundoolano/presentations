@@ -247,6 +247,13 @@ DEMO
 
 * Supervisores: estrategias
 
+Cómo un error en un worker debe afectar a sus pares
+
+#+ATTR_ORG: :width 1024
+  [[./suptypes.png]]
+
+  [[https://adoptingerlang.org/docs/development/supervision_trees/][Fuente]]
+
 * Supervisores: árboles de supervisión
 
 #+ATTR_ORG: :width 1024
