@@ -2,12 +2,12 @@
 
 
 #+ATTR_ORG: :width 600
-                [[./squid.png]]
+                [[./img/squid.png]]
 
 * Erlang
 
 #+ATTR_ORG: :width 240
-                             [[./erlang.png]]
+                             [[./img/erlang.png]]
 
 
     - Diseñado por Joe Armstrong en Ericsson (1986)
@@ -130,12 +130,12 @@
 
 
 #+ATTR_ORG: :width 240
-                               [[./erlang.png]]
+                               [[./img/erlang.png]]
 
 * Procesos como elemento de diseño
 
 
-   - Como las go-routinas, pero no exactamente
+   - Como las go-rutinas, pero no exactamente
      - En erlang se modela el actor (proceso) y no el canal (mailbox)
 
 
@@ -214,7 +214,7 @@
 
 
 #+ATTR_ORG: :width 240
-                               [[./erlang.png]]
+                               [[./img/erlang.png]]
 * Behaviors
 
 
@@ -330,14 +330,14 @@
 
 
 #+ATTR_ORG: :width 1024
-  [[./suptypes.png]]
+  [[./img/suptypes.png]]
 
   [[https://adoptingerlang.org/docs/development/supervision_trees/][Fuente]]
 
 * Supervisores: árboles de supervisión
 
 #+ATTR_ORG: :width 1024
- [[./suptree.png]]
+ [[./img/suptree.png]]
 
   [[https://adoptingerlang.org/docs/development/supervision_trees/][Fuente]]
 
@@ -402,4 +402,4 @@
 * ¿Preguntas?
 
 #+ATTR_ORG: :width 600
-                [[./erlang-the-movie.png]]
+                [[./img/erlang-the-movie.png]]
