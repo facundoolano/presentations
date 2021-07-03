@@ -224,18 +224,18 @@ DEMO
     ingresantes, responder consultas
 
 #+begin_src erlang
-%% API
-start_link() ->
-    gen_server:start_link({global, calc_server}, ?MODULE, [], []).
+    %% API
+    start_link() ->
+        gen_server:start_link({global, calc_server}, ?MODULE, [], []).
 
-add(N) ->
-    gen_server:cast({global, calc_server}, {add, N}).
+    add(N) ->
+        gen_server:cast({global, calc_server}, {add, N}).
 
-divide(N) ->
-    gen_server:cast({global, calc_server}, {divide, N}).
+    divide(N) ->
+        gen_server:cast({global, calc_server}, {divide, N}).
 
-get() ->
-    gen_server:call({global, calc_server}, get, _Timeout=1000).
+    get() ->
+        gen_server:call({global, calc_server}, get, _Timeout=1000).
 #+end_src
 
 * Ejemplo: calc_server como gen_server
@@ -248,14 +248,14 @@ get() ->
     ingresantes, responder consultas
 
 #+begin_src erlang
-%% gen_server callbacks
+    %% gen_server callbacks
 
-init([]) -> {ok, 0}.
+    init([]) -> {ok, 0}.
 
-handle_cast({add, N}, Acc) -> {noreply, Acc + N};
-handle_cast({divide, N}, Acc) -> {noreply, Acc / N}.
+    handle_cast({add, N}, Acc) -> {noreply, Acc + N};
+    handle_cast({divide, N}, Acc) -> {noreply, Acc / N}.
 
-handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
+    handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
 #+end_src
 
 * Supervisor
@@ -277,6 +277,27 @@ handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
 
 
 * Ejemplo: calc_sup como supervisor
+#+begin_src erlang
+    init([]) ->
+        SupervisorFlags = #{
+          strategy => one_for_all, %% si falla un worker reiniciar todos
+          intensity => 5,          %% hasta 5 restarts
+          period => 60             %% cada 60 segundos
+        },
+
+        ChildSpec = [#{
+          id => calc_server,
+          start => {calc_server3, start_link, []},
+          restart => permanent
+        },
+        #{
+          id => calc_loader,
+          start => {calc_loader, start_link, []},
+          restart => transient
+         }],
+
+        {ok, {SupervisorFlags, ChildSpec}}.
+#+end_src
 
 * Supervisores: estrategias
 
