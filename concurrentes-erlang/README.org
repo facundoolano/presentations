@@ -1,8 +1,13 @@
 * Erlang: Concurrencia y tolerancia a fallos
 
+
+#+ATTR_ORG: :width 600
+                [[./squid.png]]
+
+* Erlang
+
 #+ATTR_ORG: :width 240
                    [[./erlang.png]]
-
 
     - Diseñado por Joe Armstrong en Ericsson (1986)
 
@@ -13,9 +18,6 @@
       - concurrente
       - observable
       - distribuido
-
-# Todas las decisiones de diseño obedecen al objtivo de implementar sistemas
-# tolerantes a fallas
 
 * Funcional
 
@@ -124,7 +126,11 @@
 
 * Demo: calc_server
 
-DEMO
+
+
+
+#+ATTR_ORG: :width 240
+                               [[./erlang.png]]
 
 * Procesos como elemento de diseño
 
@@ -194,8 +200,11 @@ DEMO
 
 * Demo: calc_sup
 
-DEMO
 
+
+
+#+ATTR_ORG: :width 240
+                               [[./erlang.png]]
 * Behaviors
 
   - OTP: Open Telecom Platform
@@ -361,3 +370,6 @@ Cómo un error en un worker debe afectar a sus pares
    - [[https://www.youtube.com/watch?v=BXmOlCy0oBM][Erlang: The Movie]]
 
 * ¿Preguntas?
+
+#+ATTR_ORG: :width 600
+                [[./erlang-the-movie.png]]
