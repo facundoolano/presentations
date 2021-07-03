@@ -229,19 +229,21 @@ DEMO
 
 * Supervisor
 
-  OTP Behavior que define un proceso para controlar a otros procesos "workers"
+  *Worker*: realizan trabajo y pueden fallar.
 
-  La configuración de un supervisor determina:
+  *Supervisor*: su tarea es reiniciar workers cuando mueren.
+  Pueden supervisar workers o a otros supervisores,
+  formando jerarquías o "árboles" de supervisión
 
-    - Qué workers hay que inicializar y con qué parámetros
+  Configuración:
+
+    - Qué workers hay que iniciar y con qué parámetros
 
     - La estrategia para propagar errores entre workers
 
     - La frecuencia aceptable de errores
       - Reiniciar o propagar hacia el resto de la aplicación
 
-  Se ensamblan jerarquías o "árboles" de supervisión
-    # un supervisor puede ser worker de otro
 
 * Ejemplo: calc_sup como supervisor
 
