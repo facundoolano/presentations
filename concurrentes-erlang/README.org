@@ -224,7 +224,38 @@ DEMO
     ingresantes, responder consultas
 
 #+begin_src erlang
-%% TODO
+%% API
+start_link() ->
+    gen_server:start_link({global, calc_server}, ?MODULE, [], []).
+
+add(N) ->
+    gen_server:cast({global, calc_server}, {add, N}).
+
+divide(N) ->
+    gen_server:cast({global, calc_server}, {divide, N}).
+
+get() ->
+    gen_server:call({global, calc_server}, get, _Timeout=1000).
+#+end_src
+
+* Ejemplo: calc_server como gen_server
+
+  Lo particular:
+    mantener un número y exponer operaciones para modificarlo
+
+  Lo genérico:
+    Iniciar un proceso nombrado, procesar recursivamente mensajes
+    ingresantes, responder consultas
+
+#+begin_src erlang
+%% gen_server callbacks
+
+init([]) -> {ok, 0}.
+
+handle_cast({add, N}, Acc) -> {noreply, Acc + N};
+handle_cast({divide, N}, Acc) -> {noreply, Acc / N}.
+
+handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
 #+end_src
 
 * Supervisor
