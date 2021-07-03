@@ -1,6 +1,8 @@
 * Erlang: Concurrencia y tolerancia a fallos
 
-    # TODO logo
+#+ATTR_ORG: :width 240
+                   [[./erlang.png]]
+
 
     - Diseñado por Joe Armstrong en Ericsson (1986)
 
@@ -15,30 +17,28 @@
 # Todas las decisiones de diseño obedecen al objtivo de implementar sistemas
 # tolerantes a fallas
 
-* Erlang es un lenguaje funcional...
+* Funcional
 
-    - Las variables son inmutables
+  Erlang es un lenguaje funcional...
 
-    - No hay sentencias, solo expresiones
+      - Las variables son inmutables
 
-    - Se usa recursividad para controlar el flujo
+      - No hay sentencias, solo expresiones
+
+      - Se usa recursividad para controlar el flujo
 
 
-* ...pero es pragmático
+  ...pero es pragmático
 
- No intenta ser "puro"
-   # Nació y maduró mediante su aplicación en la industria
+       - Las funciones pueden tener efectos secundarios
 
- - Las funciones pueden tener efectos secundarios
-   - system calls
-   - ejecutar código nativo C (o Rust!)
-   - ejecutar programas externos
+       - Hay estructuras que habilitan estado mutable global
 
- - Hay estructuras que habilitan estado mutable global (en forma controlada)
-   - Almacenamiento clave-valor en memoria y disco (ETS/DETS)
-   - Base de datos distribuida (Mnesia)
-   - Valores atómicos, contadores
-   - datos globales no copiados (persistent terms)
+       - Se diseñó y evolucionó mediante el uso en la industria
+
+#  No intenta ser "puro"
+#  system calls, codigo nativo C/Rust, programas externos
+#  ETS, Mnesia, persistent terms, etc.
 
 * Ejemplo (recursivo)
 
@@ -82,7 +82,7 @@
         [N + 1 || N <- List].
 #+end_src
 
-* Concurrencia: Actor model
+* Concurrente
 
 - Los programas de Erlang consisten en procesos concurrentes
   # En vez de una función main, cada proceso ejecuta su propia funcion (a veces en loop)
@@ -120,7 +120,6 @@
     end.
   Received: hello_world from <0.88.0>
   ok
-
 #+end_src
 
 * Demo: calc_server
@@ -134,7 +133,8 @@ DEMO
 
   - Como POO, pero no exactamente
     - Cercano a la idea original de POO (Smalltalk)
-    - Los procesos son baratos, pero no es práctico uno por cada entidad del dominio
+    - Los procesos son baratos, pero no es práctico
+      uno por cada entidad del dominio
 
   - Siempre se trata de tolerancia a fallos!
     - separar componentes para aislar y controlar sus modos de error
@@ -311,7 +311,7 @@ Cómo un error en un worker debe afectar a sus pares
 * Supervisores: árboles de supervisión
 
 #+ATTR_ORG: :width 1024
-  [[./suptree.png]]
+ [[./suptree.png]]
 
   [[https://adoptingerlang.org/docs/development/supervision_trees/][Fuente]]
 
@@ -344,9 +344,9 @@ Cómo un error en un worker debe afectar a sus pares
    - [[https://ferd.ca/the-zen-of-erlang.html][The Zen of Erlang]]
 
    - [[https://learnyousomeerlang.com/][Learn You Some Erlang for Great Good]]
-      - [[https://learnyousomeerlang.com/the-hitchhikers-guide-to-concurrency][The Hitchhiker's Guide to Concurrency]]
-      - [[https://learnyousomeerlang.com/errors-and-processes][Errors and Processes]]
-      - [[https://learnyousomeerlang.com/supervisors][Who Supervises The Supervisors?]]
+     - [[https://learnyousomeerlang.com/the-hitchhikers-guide-to-concurrency][The Hitchhiker's Guide to Concurrency]]
+     - [[https://learnyousomeerlang.com/errors-and-processes][Errors and Processes]]
+     - [[https://learnyousomeerlang.com/supervisors][Who Supervises The Supervisors?]]
 
    - [[https://ferd.ca/an-open-letter-to-the-erlang-beginner-or-onlooker.html][An Open Letter to the Erlang Beginner (or Onlooker)]]
 
@@ -357,5 +357,7 @@ Cómo un error en un worker debe afectar a sus pares
    - [[https://adoptingerlang.org/docs/development/supervision_trees/][Adopting Erlang - Supervision trees]]
 
    - [[http://spawnedshelter.com/][Spawned Shelter!]]
+
+   - [[https://www.youtube.com/watch?v=BXmOlCy0oBM][Erlang: The Movie]]
 
 * ¿Preguntas?
