@@ -7,7 +7,8 @@
 * Erlang
 
 #+ATTR_ORG: :width 240
-                   [[./erlang.png]]
+                             [[./erlang.png]]
+
 
     - Diseñado por Joe Armstrong en Ericsson (1986)
 
@@ -21,7 +22,8 @@
 
 * Funcional
 
-  Erlang es un lenguaje funcional...
+
+    Erlang es un lenguaje funcional...
 
       - Las variables son inmutables
 
@@ -30,7 +32,7 @@
       - Se usa recursividad para controlar el flujo
 
 
-  ...pero es pragmático
+    ...pero es pragmático
 
        - Las funciones pueden tener efectos secundarios
 
@@ -38,9 +40,6 @@
 
        - Se diseñó y evolucionó mediante el uso en la industria
 
-#  No intenta ser "puro"
-#  system calls, codigo nativo C/Rust, programas externos
-#  ETS, Mnesia, persistent terms, etc.
 
 * Ejemplo (recursivo)
 
@@ -86,19 +85,20 @@
 
 * Concurrente
 
-- Los programas de Erlang consisten en procesos concurrentes
-  # En vez de una función main, cada proceso ejecuta su propia funcion (a veces en loop)
-  # No ejecutamos un programa, ejecutamos el Runtime de erlang con un conjunto de procesos iniciales
 
-- Los procesos son livianos
-  - rápidos de inicializar y terminar
-  - Se usan tantos como sea necesario
+   - Erlang implementa el *modelo de actores* directamente en su Virtual Machine
 
-- Los procesos están aislados
-  - Solo se comunican mediante envío de mensajes
-  - Cada proceso tiene un "mailbox" donde se acumulan mensajes recibidos
-  - Los mensajes son valores copiados, no hay memoria compartida
-    - no hay locks, mutexes, semaphores
+     - Procesos livianos y aislados
+
+     - La comunicación es por pasaje de mensajes (valores copiados)
+
+
+   - El runtime no ejecuta programas sino aplicaciones
+
+     - Iniciamos el runtime con determinadas aplicaciones
+
+     - Cada aplicación consiste en un conjunto de procesos
+
 
 * Concurrencia: primitivas
 
@@ -134,69 +134,79 @@
 
 * Procesos como elemento de diseño
 
-  - Como las go-routinas, pero no exactamente
-    - En erlang se modela el actor (proceso) y no el canal (mailbox)
 
-  - Como POO, pero no exactamente
-    - Cercano a la idea original de POO (Smalltalk)
-    - Los procesos son baratos, pero no es práctico
-      uno por cada entidad del dominio
+   - Como las go-routinas, pero no exactamente
+     - En erlang se modela el actor (proceso) y no el canal (mailbox)
 
-  - Siempre se trata de tolerancia a fallos!
-    - separar componentes para aislar y controlar sus modos de error
-    - "Encapsulate what may crash"
+
+   - Como objetos, pero no exactamente
+     - Cercano a la idea original de POO (Smalltalk)
+     - Los procesos son baratos, pero no es práctico
+       crear uno por cada entidad del dominio
+
+
+   - Siempre se trata de tolerancia a fallos!
+     - Separar componentes para aislar y controlar sus modos de error
+     - "Encapsulate what may crash"
 
 * VM: Modelo de memoria
+
 
    - Cada proceso tiene su propio espacio de memoria
      - realiza su propio garbage collection
      - la mayoría guarda poco estado propio
      - en muchos casos mueren antes de necesitar recolectar basura
 
+
    - Los valores son copiados al enviar mensajes
      - No hay que lidiar con estado compartido
      - se eliminan los /data races/
 
+
    - Erlang provee mecanismos externos para evitar la copia de grandes datos
      - pasaje por referencia de binarios
-     - Almacenamiento clave-valor
-     - Términos globales
+     - Almacenamiento clave-valor (ETS)
+     - Términos globales (persistent_term)
 
 * VM: Scheduler
 
-  - Erlang hace *preemptive scheduling*
-    - se parece más a un S.O. que a otros lenguajes
 
-  - Ejecuta un scheduler por cada núcleo de la computadora
-    - El scheduler asigna un numero de "reducciones" a cada proceso
-    - Todas las operaciones consumen reducciones
-    - La ejecución del proceso se interrumpe cuando terminan las reducciones
-      y se pasa al siguiente proceso en la cola
+   - Erlang hace *preemptive scheduling*
+     - se parece más a un S.O. que a otros lenguajes
 
-  - Erlang optimiza latencia sobre throughput
-    - La tarea del scheduler implica un costo extra
-    - Se garantiza un reparto "justo" de los recursos
-    - Un proceso lento/trabajoso no puede afectar a los demás
-    - Los sistemas suelen degradar "graciosamente" ante mayor carga
+
+   - Ejecuta un scheduler por cada núcleo de la computadora
+     - El scheduler asigna un numero de "reducciones" a cada proceso
+     - Todas las operaciones consumen reducciones
+     - La ejecución del proceso se interrumpe cuando terminan las reducciones
+       y se pasa al siguiente proceso en la cola
+
+
+   - Erlang optimiza latencia sobre throughput
+     - La tarea del scheduler implica un costo extra
+     - Se garantiza un reparto "justo" de los recursos
+     - Un proceso lento/trabajoso no puede afectar a los demás
+     - Los sistemas suelen degradar "graciosamente" ante mayor carga
 
 * Concurrencia robusta
 
-  Los procesos son terminados en la presencia de errores.
 
-  Además del manejo tradicional (try/catch), Erlang para propagar
-  o delegar el manejo de errores hacia otros procesos.
+    Los procesos son terminados en la presencia de errores.
 
-    - *Links*
-      # enlazar dos procesos de forma que la terminación de uno se propaga
-      # hacia el otro. Permite terminar grupos de procesos en conjunto.
+    Además del manejo tradicional (try/catch), Erlang da herramientas
+    para propagar o delegar el manejo de errores hacia otros procesos.
 
-    - *Traps*
-      # capturar las señales de terminación para actuar, por ejemplo
-      # reemplazando el proceso con uno nuevo.
+      - *Links*
+        # enlazar dos procesos de forma que la terminación de uno se propaga
+        # hacia el otro. Permite terminar grupos de procesos en conjunto.
 
-    - *Monitors*
-      # registrarse un proceso para recibir mensajes ante la
-      # terminación de otro.
+      - *Traps*
+        # capturar las señales de terminación para actuar, por ejemplo
+        # reemplazando el proceso con uno nuevo.
+
+      - *Monitors*
+        # registrarse un proceso para recibir mensajes ante la
+        # terminación de otro.
 
 * Demo: calc_sup
 
@@ -207,32 +217,35 @@
                                [[./erlang.png]]
 * Behaviors
 
-  - OTP: Open Telecom Platform
-    - Framework para hacer aplicaciones Erlang "estándar"
 
-  - Behaviors
-    - Mecanismo de reuso de código
-    - Permiten separar la parte genérica/reusable de un problema
-      de lo específico
-    - Similares a clases abstractas en POO
+   - OTP: Open Telecom Platform
+     - Framework para hacer aplicaciones Erlang "estándar"
 
-  - Alguns behaviors provistos por OTP
-      - gen_server
-      - gen_event
-      - gen_statem
-      - supervisor
-      - application
+
+   - Behaviors
+     - Mecanismo de reuso de código
+     - Permiten separar la parte genérica/reusable de un problema
+       de lo específico
+     - Similares a clases abstractas en POO
+
+
+   - Algunos behaviors provistos por OTP:
+       - gen_server
+       - gen_event
+       - gen_statem
+       - supervisor
+       - application
 
 * Ejemplo: calc_server como gen_server
 
-  Lo particular:
-    mantener un número y exponer operaciones para modificarlo
+   Lo genérico:
+     Iniciar un proceso nombrado, procesar recursivamente mensajes
+     ingresantes, responder consultas
 
-  Lo genérico:
-    Iniciar un proceso nombrado, procesar recursivamente mensajes
-    ingresantes, responder consultas
+   Lo particular:
+     mantener un número y exponer operaciones para modificarlo
 
-#+begin_src erlang
+      #+begin_src erlang
     %% API
     start_link() ->
         gen_server:start_link({global, calc_server}, ?MODULE, [], []).
@@ -249,14 +262,14 @@
 
 * Ejemplo: calc_server como gen_server
 
-  Lo particular:
-    mantener un número y exponer operaciones para modificarlo
+   Lo genérico:
+     Iniciar un proceso nombrado, procesar recursivamente mensajes
+     ingresantes, responder consultas
 
-  Lo genérico:
-    Iniciar un proceso nombrado, procesar recursivamente mensajes
-    ingresantes, responder consultas
+   Lo particular:
+     mantener un número y exponer operaciones para modificarlo
 
-#+begin_src erlang
+   #+begin_src erlang
     %% gen_server callbacks
 
     init([]) -> {ok, 0}.
@@ -267,26 +280,28 @@
     handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
 #+end_src
 
-* Supervisor
+* Supervisores
 
-  *Worker*: realizan trabajo y pueden fallar.
 
-  *Supervisor*: su tarea es reiniciar workers cuando mueren.
-  Pueden supervisar workers o a otros supervisores,
-  formando jerarquías o "árboles" de supervisión
+    *Worker*: realiza trabajo y puede fallar.
 
-  Configuración:
+    *Supervisor*: su tarea es reiniciar workers cuando mueren.
+    Pueden supervisar workers o a otros supervisores,
+    formando jerarquías o "árboles" de supervisión
 
-    - Qué workers hay que iniciar y con qué parámetros
 
-    - La estrategia para propagar errores entre workers
+    Configuración:
 
-    - La frecuencia aceptable de errores
-      - Reiniciar o propagar hacia el resto de la aplicación
+      - Qué workers hay que iniciar y con qué parámetros
+
+      - La estrategia para propagar errores entre workers
+
+      - La frecuencia aceptable de errores
+        # Reiniciar o propagar hacia el resto de la aplicación
 
 
 * Ejemplo: calc_sup como supervisor
-#+begin_src erlang
+ #+begin_src erlang
     init([]) ->
         SupervisorFlags = #{
           strategy => one_for_all, %% si falla un worker reiniciar todos
@@ -310,7 +325,9 @@
 
 * Supervisores: estrategias
 
-Cómo un error en un worker debe afectar a sus pares
+
+    Cómo un error en un worker debe afectar a sus pares
+
 
 #+ATTR_ORG: :width 1024
   [[./suptypes.png]]
@@ -333,19 +350,32 @@ Cómo un error en un worker debe afectar a sus pares
 
 * El Zen de Erlang: let it crash
 
-  Los crashes son inevitables: si los controlamos se convierten en una herramienta.
 
-    - "let it crash" / dejalo que se rompa
-      - la mayoría de los errores son transitorios ("heisenbugs")
-      - en vez de tratar de predecirlos y manejarlos -> instruir al sistema para recuperarse
-      - en vez de escribir código defensivo -> dejá que el proceso muera y el supervisor lo reinicie
-      - el manejo de errores no está en la lógica sino en la arquitectura de la aplicación (supervisors y applications)
+   Los crashes son inevitables:
+     si los controlamos podemos usarlos como herramientas.
+
+
+   *Let it crash* (dejalo que se rompa)
+      - La mayoría de los errores son transitorios ("heisenbugs")
+
+      - En vez de tratar de predecirlos y manejarlos =>
+          Instruir al sistema para recuperarse
+
+      - En vez de escribir código defensivo =>
+          Dejá que el proceso muera y el supervisor lo reinicie
+
+      - El manejo de errores no está en la lógica sino
+        en la estructura de la aplicación
 
 * Aún hay más
 
+
     - Erlang distribuido
+
     - Hot code reloading
+
     - Introspección, observabilidad, tracing
+
     - Elixir
 
 * Fuentes
