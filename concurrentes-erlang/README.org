@@ -135,7 +135,8 @@
 * Procesos como elemento de diseño
 
 
-   - Como las go-rutinas, pero no exactamente
+   - Como CSP/go-rutinas, pero no exactamente
+     - En ambos casos la comunicación es por pasaje de mensajes
      - En erlang se modela el actor (proceso) y no el canal (mailbox)
 
 
@@ -182,7 +183,7 @@
        y se pasa al siguiente proceso en la cola
 
 
-   - Erlang optimiza latencia sobre throughput
+   - Erlang prioriza latencia sobre throughput
      - La tarea del scheduler implica un costo extra
      - Se garantiza un reparto "justo" de los recursos
      - Un proceso lento/trabajoso no puede afectar a los demás
