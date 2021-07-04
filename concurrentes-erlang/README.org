@@ -38,7 +38,6 @@
 
        - Hay estructuras que habilitan estado mutable global
 
-       - Se diseñó y evolucionó mediante el uso en la industria
 
 
 * Ejemplo (recursivo)
@@ -58,6 +57,7 @@
     list_increase([], Result) ->
         lists:reverse(Result).
 #+end_src
+
 
 * Ejemplo (funciones de alto orden)
 
@@ -86,7 +86,7 @@
 * Concurrente
 
 
-   - Erlang implementa el *modelo de actores* directamente en su Virtual Machine
+   - Erlang implementa el *modelo de actores* en su Virtual Machine
 
      - Procesos livianos y aislados
 
@@ -110,7 +110,7 @@
   %% Iniciar un nuevo proceso con spawn
   > spawn(fun() ->
             %% Enviar un mensaje al proceso de la shell
-            ParentPid ! {self(), hello_world}
+            ParentPid ! {self(), "hello world!"}
           end).
   <0.88.0>
 
@@ -120,7 +120,7 @@
         %% Imprimir el valor recibido por stdout
         io:format("Received: ~p from ~p \n", [Message, From])
     end.
-  Received: hello_world from <0.88.0>
+  Received: hello world! from <0.88.0>
   ok
 #+end_src
 
@@ -215,6 +215,7 @@
 
 #+ATTR_ORG: :width 240
                                [[./img/erlang.png]]
+
 * Behaviors
 
 
@@ -226,7 +227,7 @@
      - Mecanismo de reuso de código
      - Permiten separar la parte genérica/reusable de un problema
        de lo específico
-     - Similares a clases abstractas en POO
+     - Similares a clases abstractas y /template method/ en POO
 
 
    - Algunos behaviors provistos por OTP:
@@ -245,7 +246,28 @@
    Lo particular:
      mantener un número y exponer operaciones para modificarlo
 
-      #+begin_src erlang
+#+begin_src erlang
+    -behavior(gen_server).
+
+    %% gen_server callbacks
+    init([]) -> {ok, 0}.
+
+    handle_cast({add, N}, Acc) -> {noreply, Acc + N};
+    handle_cast({divide, N}, Acc) -> {noreply, Acc / N}.
+
+    handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
+#+end_src
+
+* Ejemplo: calc_server como gen_server
+
+   Lo genérico:
+     Iniciar un proceso nombrado, procesar recursivamente mensajes
+     ingresantes, responder consultas
+
+   Lo particular:
+     mantener un número y exponer operaciones para modificarlo
+
+#+begin_src erlang
     %% API
     start_link() ->
         gen_server:start_link({global, calc_server}, ?MODULE, [], []).
@@ -260,33 +282,13 @@
         gen_server:call({global, calc_server}, get, _Timeout=1000).
 #+end_src
 
-* Ejemplo: calc_server como gen_server
-
-   Lo genérico:
-     Iniciar un proceso nombrado, procesar recursivamente mensajes
-     ingresantes, responder consultas
-
-   Lo particular:
-     mantener un número y exponer operaciones para modificarlo
-
-   #+begin_src erlang
-    %% gen_server callbacks
-
-    init([]) -> {ok, 0}.
-
-    handle_cast({add, N}, Acc) -> {noreply, Acc + N};
-    handle_cast({divide, N}, Acc) -> {noreply, Acc / N}.
-
-    handle_call(get, _From, Acc) -> {reply, Acc, Acc}.
-#+end_src
-
 * Supervisores
 
 
     *Worker*: realiza trabajo y puede fallar.
 
     *Supervisor*: su tarea es reiniciar workers cuando mueren.
-    Pueden supervisar workers o a otros supervisores,
+    Pueden supervisar workers o a otros supervisores
     formando jerarquías o "árboles" de supervisión
 
 
@@ -302,6 +304,8 @@
 
 * Ejemplo: calc_sup como supervisor
  #+begin_src erlang
+    -behavior(supevisor).
+
     init([]) ->
         SupervisorFlags = #{
           strategy => one_for_all, %% si falla un worker reiniciar todos
@@ -313,8 +317,7 @@
           id => calc_server,
           start => {calc_server3, start_link, []},
           restart => permanent
-        },
-        #{
+        }, #{
           id => calc_loader,
           start => {calc_loader, start_link, []},
           restart => transient

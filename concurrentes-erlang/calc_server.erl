@@ -27,11 +27,11 @@ get(ServerPid) ->
 
 loop(Acc) ->
     NewAcc =
-    receive
-        {get, FromPid} ->
-            FromPid ! {calc_server_result, Acc},
-            Acc;
-        {add, N} -> Acc + N;
-        {divide, N} -> Acc / N
-    end,
+        receive
+            {get, FromPid} ->
+                FromPid ! {calc_server_result, Acc},
+                Acc;
+            {add, N} -> Acc + N;
+            {divide, N} -> Acc / N
+        end,
     loop(NewAcc).
