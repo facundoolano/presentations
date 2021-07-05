@@ -185,7 +185,7 @@
 
    - Erlang prioriza latencia sobre throughput
      - La tarea del scheduler implica un costo extra
-     - Se garantiza un reparto "justo" de los recursos
+     - Se garantiza un reparto equitativo de los recursos
      - Un proceso lento/trabajoso no puede afectar a los demás
      - Los sistemas suelen degradar "graciosamente" ante mayor carga
 
