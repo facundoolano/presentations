@@ -1,3 +1,12 @@
+#+TITLE:     Erlang: Concurrencia y tolerancia a fallos
+#+subtitle: 75.59 - Técnicas de programación concurrente I
+#+description:
+#+AUTHOR:    Facundo Olano - facundo.olano@gmail.com
+# #+startup: beamer
+# #+LaTeX_CLASS: beamer
+#+LaTeX_HEADER: \setminted{fontsize=\footnotesize}
+#+latex_compiler: pdflatex
+#+date: 2021-07-06
 * Erlang: Concurrencia y tolerancia a fallos
 
 
@@ -7,6 +16,7 @@
 * Erlang
 
 #+ATTR_ORG: :width 240
+#+ATTR_LATEX: :width 120px
                              [[./img/erlang.png]]
 
 
@@ -130,6 +140,7 @@
 
 
 #+ATTR_ORG: :width 240
+#+ATTR_LATEX: :width 120px
                                [[./img/erlang.png]]
 
 * Procesos como elemento de diseño
@@ -215,6 +226,7 @@
 
 
 #+ATTR_ORG: :width 240
+#+ATTR_LATEX: :width 120px
                                [[./img/erlang.png]]
 
 * Behaviors
