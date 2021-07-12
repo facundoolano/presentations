@@ -2,10 +2,9 @@
 #+subtitle: 75.59 - Técnicas de programación concurrente I
 #+description:
 #+AUTHOR:    Facundo Olano - facundo.olano@gmail.com
-# #+startup: beamer
-# #+LaTeX_CLASS: beamer
 #+LaTeX_HEADER: \setminted{fontsize=\footnotesize}
 #+latex_compiler: pdflatex
+#+EXPORT_FILE_NAME: slides.pdf
 #+date: 2021-07-06
 * Erlang: Concurrencia y tolerancia a fallos
 
