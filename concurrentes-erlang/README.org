@@ -12,6 +12,11 @@
 #+ATTR_ORG: :width 600
                 [[./img/squid.png]]
 
+
+                                Facundo Olano
+               75.59 - Técnicas de programación concurrente I
+
+
 * Erlang
 
 #+ATTR_ORG: :width 240
@@ -20,6 +25,7 @@
 
 
     - Diseñado por Joe Armstrong en Ericsson (1986)
+      - Open Source en 1998
 
     - Usado originalmente para switches de telefonía
 
@@ -160,6 +166,26 @@
      - Separar componentes para aislar y controlar sus modos de error
      - "Encapsulate what may crash"
 
+* VM: Scheduler
+
+
+   - Erlang hace *planificación preemptiva* (preemptive scheduling)
+     - se parece más a un S.O. que a otros lenguajes
+
+
+   - Ejecuta un scheduler por cada núcleo de la computadora
+     - El scheduler asigna un numero de "reducciones" a cada proceso
+     - Todas las operaciones consumen reducciones
+     - La ejecución del proceso se interrumpe cuando terminan las reducciones
+       y se pasa al siguiente proceso en la cola
+
+
+   - Erlang prioriza latencia sobre throughput
+     - La tarea del scheduler implica un costo extra
+     - Se garantiza un reparto equitativo de los recursos
+     - Un proceso lento/trabajoso no puede afectar a los demás
+     - Los sistemas suelen degradar "graciosamente" ante mayor carga
+
 * VM: Modelo de memoria
 
 
@@ -178,26 +204,6 @@
      - pasaje por referencia de binarios
      - Almacenamiento clave-valor (ETS)
      - Términos globales (persistent_term)
-
-* VM: Scheduler
-
-
-   - Erlang hace *preemptive scheduling*
-     - se parece más a un S.O. que a otros lenguajes
-
-
-   - Ejecuta un scheduler por cada núcleo de la computadora
-     - El scheduler asigna un numero de "reducciones" a cada proceso
-     - Todas las operaciones consumen reducciones
-     - La ejecución del proceso se interrumpe cuando terminan las reducciones
-       y se pasa al siguiente proceso en la cola
-
-
-   - Erlang prioriza latencia sobre throughput
-     - La tarea del scheduler implica un costo extra
-     - Se garantiza un reparto equitativo de los recursos
-     - Un proceso lento/trabajoso no puede afectar a los demás
-     - Los sistemas suelen degradar "graciosamente" ante mayor carga
 
 * Concurrencia robusta
 
@@ -259,6 +265,7 @@
      mantener un número y exponer operaciones para modificarlo
 
 #+begin_src erlang
+    -module(calc_server3).
     -behavior(gen_server).
 
     %% gen_server callbacks

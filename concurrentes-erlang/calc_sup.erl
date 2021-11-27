@@ -17,6 +17,6 @@ restarter() ->
 
     receive
         {'EXIT', ServerPid, _} ->
-            io:format("Restarting calc_server "),
+            io:format("Supervisor: restarting calc_server \n"),
             restarter()
     end.
