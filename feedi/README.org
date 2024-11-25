@@ -1,0 +1,180 @@
+#+LANG: es
+* feedi - un lector personal de RSS y Mastodon
+
+
+TODO screenshot
+
+* Background: salir de Twitter
+
+
++ Problema: Twitter como medio de información
+
+  - El usuario no controla el contenido que consume
+
+  - feed optimizado para: tiempo en patalla, ads, amar a Elon, votar a Trump
+
++ Solución: Mastodon?
+
+* Alternativa descentralizada: Mastodon
+
+** Lo bueno
++ Feed neutral, ordenado cronológicamente
+
++ 90% de los usuarios son devs tratando de arreglar internet
+
+** Lo malo
+
+- 90% de los usuarios son devs.
+
+- 0% memes argentos
+
+- microblogging me aburre
+
+- El Feed no está optimizado para consumir información
+
+* Alternativa descentralizada: Mastodon
+
+** Lo bueno
++ Feed neutral, ordenado cronológicamente
+
++ 90% de los usuarios son *devs tratando de arreglar internet*
+
+** Lo malo
+
+- 90% de los usuarios son devs.
+
+- 0% memes argentos
+
+- microblogging me aburre
+
+- El Feed no está optimizado para consumir información
+
+
+* Devs tratando de arreglar internet
+
++ RSS not dead
+
+  - 70% de los sitios todavía soportan RSS/atom (no chequeado)
+
+  - RSS expone el contenido, el usuario controla la interfaz
+
+  TODO screenshot
+
+
+
++ Indie Readers
+
+  + RSS readers con esteroides (likes y comentarios)
+
+  TODO screenshot
+
+
+* Proyecto: Un lector RSS personal
+
+
++ Objetivos:
+
+  - UI parecida a un feed de twitter
+
+    - No como un email inbox
+
+    - (stream vs backlog)
+
+  - Parseo adaptable a distintos sitios
+
+  - Sin features sociales, solo consumo de información
+
+
++ Diseño:
+
+  + users > ops > dev
+
+  + users = [facundo]
+
+    + aka dogfood
+
+* Stack
+
++ lo que sea que me permita iterar lo más rápido posible
+
+  + Python (Flask + SQLalchemy), Sqlite, HTMX, Linux, nginx.
+
+  + No async, No celery, No redis, No React, No Docker, No Kubernetes.
+
+* HTMX
+
+
+TODO ejemplo
+
+* Algoritmo del feed
+
++ Problema: el orden cronológico prioriza a los spammers
+
++ Solución: separar los feeds en frequency buckets
+
+  #+begin_src python
+# rank feeds (put them in "buckets")
+# according to how many daily entries they have on average
+rank_func = sa.case(
+    # once a month or less
+    (sa.func.count(cls.id) / days_since_creation < 1 / 30, 0),
+    # once week or less
+    (sa.func.count(cls.id) / days_since_creation < 1 / 7, 1),
+    # once a day or less
+    (sa.func.count(cls.id) / days_since_creation < 1, 2),
+    # 5 times a day or less
+    (sa.func.count(cls.id) / days_since_creation < 5, 3),
+    # 20 times a day or less
+    (sa.func.count(cls.id) / days_since_creation < 20, 4),
+    else_=5,  # more
+)
+
+# sort by bucket + publish date
+db.select(Entry)
+  .join(Feed)
+  .order_by(Feed.rank, Entry.date.desc())
+  #+end_src
+
+* Algoritmo del feed
+
++ Problema: si los infrecuentes siempre aparecen primero
+            el feed se vuelve aburrido
+
++ Solución: ocultar las entradas vistas automáticamente
+
+* Demo
+
+
+* Otras features
+
+
+- Reader mode
+
+- Send to Kindle
+
+- Custom RSS parser
+
+- Scraper para páginas sin RSS
+
+- Cliente de mastodon
+
+- Progressive Web App (mobile)
+
+* Preguntas?
+
+* Fuentes
+
+
++ [[https://github.com/facundoolano/feedi/][github.com/facundoolano/feedi]]
+
++ [[https://olano.dev/blog/reclaiming-the-web-with-a-personal-reader/][olano.dev/blog/reclaiming-the-web-with-a-personal-reader]]
+
++ [[https://olano.dev/blog/miscelanea-sobre-web-y-redes-sociales/][olano.dev/blog/miscelanea-sobre-web-y-redes-sociales]]
+
++ [[https://www.jvt.me/posts/2019/10/20/indieweb-talk/][jvt.me/posts/2019/10/20/indieweb-talk]]
+
++ [[https://www.theverge.com/23778253/google-reader-death-2013-rss-social][theverge.com/23778253/who-killed-google-reader]]
+
++ [[https://aaronparecki.com/2018/04/20/46/indieweb-reader-my-new-home-on-the-internet][aaronparecki.com/2018/04/20/46/indieweb-reader-my-new-home-on-the-internet]]
+
++ Pyrex
