@@ -54,20 +54,17 @@
 * Devs tratando de arreglar internet
 
 + RSS not dead
+  #+ATTR_ORG: :width 600
+          [[./google.jpg]]
 
   - 70% de los sitios todavía soportan RSS/atom (no chequeado)
 
   - RSS expone el contenido, el usuario controla la interfaz
 
-  TODO screenshot
-
-
 
 + Indie Readers
 
-  + RSS readers con esteroides (likes y comentarios)
-
-  TODO screenshot
+  + RSS con esteroides (likes, comentarios, real-time)
 
 
 * Proyecto: Un lector RSS personal
