@@ -2,7 +2,8 @@
 * feedi - un lector personal de RSS y Mastodon
 
 
-TODO screenshot
+#+ATTR_ORG: :width 800
+          [[./feedi1.png]]
 
 * Background: salir de Twitter
 
@@ -75,10 +76,7 @@ TODO screenshot
 + Objetivos:
 
   - UI parecida a un feed de twitter
-
-    - No como un email inbox
-
-    - (stream vs backlog)
+    - No como un email inbox (stream vs backlog)
 
   - Parseo adaptable a distintos sitios
 
@@ -90,12 +88,11 @@ TODO screenshot
   + users > ops > dev
 
   + users = [facundo]
-
     + aka dogfood
 
 * Stack
 
-+ lo que sea que me permita iterar lo más rápido posible
++ lo que me permita iterar lo más rápido posible
 
   + Python (Flask + SQLalchemy), Sqlite, HTMX, Linux, nginx.
 
@@ -103,8 +100,26 @@ TODO screenshot
 
 * HTMX
 
+#+begin_src html
+<input class="form-control" type="search"
+       name="search" placeholder="Begin Typing To Search Users..."
+       hx-post="/search"
+       hx-trigger="input changed delay:500ms, search"
+       hx-target="#search-results"
+       hx-indicator=".htmx-indicator">
 
-TODO ejemplo
+<table class="table">
+    <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+    </tr>
+    </thead>
+    <tbody id="search-results">
+    </tbody>
+</table>
+#+end_src
 
 * Algoritmo del feed
 
@@ -112,38 +127,32 @@ TODO ejemplo
 
 + Solución: separar los feeds en frequency buckets
 
-  #+begin_src python
-# rank feeds (put them in "buckets")
-# according to how many daily entries they have on average
-rank_func = sa.case(
-    # once a month or less
-    (sa.func.count(cls.id) / days_since_creation < 1 / 30, 0),
-    # once week or less
-    (sa.func.count(cls.id) / days_since_creation < 1 / 7, 1),
-    # once a day or less
-    (sa.func.count(cls.id) / days_since_creation < 1, 2),
-    # 5 times a day or less
-    (sa.func.count(cls.id) / days_since_creation < 5, 3),
-    # 20 times a day or less
-    (sa.func.count(cls.id) / days_since_creation < 20, 4),
-    else_=5,  # more
-)
+  + Bucket 0: once a month
+  + Bucket 1: once a week
+  + Bucket 2: once a day
+  + Bucket 3: < 5 a day
+  + Bucket 4: < 20 a day
+  + Bucket 5: > 20 a day
 
+    #+begin_src python
 # sort by bucket + publish date
 db.select(Entry)
   .join(Feed)
-  .order_by(Feed.rank, Entry.date.desc())
-  #+end_src
+  .order_by(Feed.bucket, Entry.date.desc())
+    #+end_src
 
 * Algoritmo del feed
 
 + Problema: si los infrecuentes siempre aparecen primero
             el feed se vuelve aburrido
 
-+ Solución: ocultar las entradas vistas automáticamente
++ Solución: auto-marcar como leído
 
 * Demo
 
+
+#+ATTR_ORG: :width 800
+          [[./feedi1.png]]
 
 * Otras features
 
