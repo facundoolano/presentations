@@ -1,22 +1,49 @@
-#+LANG: es
 * feedi - un lector personal de RSS y Mastodon
-
 
 #+ATTR_ORG: :width 800
           [[./feedi1.png]]
 
-* Background: salir de Twitter
+* Informarse con Twitter
+
++ El feed de twitter es una interfaz cómoda
++ Todo el mundo publica ahí
++ La información nos llega en tiempo real
++ solo tenemos que scrollear y scrollear
 
 
-+ Problema: Twitter como medio de información
+* Informarse con Twitter
 
-  - El usuario no controla el contenido que consume
++ El feed de twitter es una interfaz cómoda
++ Todo el mundo publica ahí
++ La información nos llega en tiempo real
++ solo tenemos que scrollear y scrollear
 
-  - feed optimizado para: tiempo en patalla, ads, amar a Elon, votar a Trump
+- El usuario no controla el contenido que consume
+- No está optimizado para informarnos
+- optimizado para ser adictivo, clickear ads,
+    amar a Elon, votar a Trump
 
-+ Solución: Mastodon?
 
-* Alternativa descentralizada: Mastodon
+* La solución
+
+- Bluesky?
+
+
+* La solución
+
+- +Bluesky+
+  - todas las plataformas empiezan bien y terminan mal
+
+
+* La solución
+
+- +Bluesky+
+  - todas las plataformas empiezan bien y terminan mal
+
+- Solución: construir sobre protocolos abiertos
+  en vez de usar plataformas cerradas.
+
+* Protocolo: ActivityPub (Mastodon)
 
 ** Lo bueno
 + Feed neutral, ordenado cronológicamente
@@ -29,42 +56,20 @@
 
 - 0% memes argentos
 
-- microblogging me aburre
+- microblogging es aburrido
 
-- El Feed no está optimizado para consumir información
+- tampoco está optimizado para consumir información
 
-* Alternativa descentralizada: Mastodon
-
-** Lo bueno
-+ Feed neutral, ordenado cronológicamente
-
-+ 90% de los usuarios son *devs tratando de arreglar internet*
-
-** Lo malo
-
-- 90% de los usuarios son devs.
-
-- 0% memes argentos
-
-- microblogging me aburre
-
-- El Feed no está optimizado para consumir información
-
-
-* Devs tratando de arreglar internet
+* Protocolo: RSS
 
 + RSS not dead
-  #+ATTR_ORG: :width 600
-          [[./google.jpg]]
 
-  - 70% de los sitios todavía soportan RSS/atom (no chequeado)
+  - 70% de los sitios todavía soportan RSS/Atom (no chequeado)
 
   - RSS expone el contenido, el usuario controla la interfaz
 
-
-+ Indie Readers
-
-  + RSS con esteroides (likes, comentarios, real-time)
+#+ATTR_ORG: :width 600
+          [[./google.jpg]]
 
 
 * Proyecto: Un lector RSS personal
@@ -106,17 +111,19 @@
        hx-indicator=".htmx-indicator">
 
 <table class="table">
-    <thead>
-    <tr>
+    <thead><tr>
       <th>First Name</th>
       <th>Last Name</th>
       <th>Email</th>
     </tr>
     </thead>
-    <tbody id="search-results">
-    </tbody>
+    <tbody id="search-results"></tbody>
 </table>
 #+end_src
+
+- +Separation of concerns+ Locality of behavior
+- Server-side rendering
+
 
 * Algoritmo del feed
 
@@ -166,21 +173,16 @@ db.select(Entry)
 
 - Progressive Web App (mobile)
 
-* Preguntas?
-
 * Fuentes
-
 
 + [[https://github.com/facundoolano/feedi/][github.com/facundoolano/feedi]]
 
 + [[https://olano.dev/blog/reclaiming-the-web-with-a-personal-reader/][olano.dev/blog/reclaiming-the-web-with-a-personal-reader]]
 
++ [[https://knightcolumbia.org/content/protocols-not-platforms-a-technological-approach-to-free-speech][Protocols, Not Platforms: A Technological Approach to Free Speech]]
+
 + [[https://olano.dev/blog/miscelanea-sobre-web-y-redes-sociales/][olano.dev/blog/miscelanea-sobre-web-y-redes-sociales]]
 
-+ [[https://www.jvt.me/posts/2019/10/20/indieweb-talk/][jvt.me/posts/2019/10/20/indieweb-talk]]
-
-+ [[https://www.theverge.com/23778253/google-reader-death-2013-rss-social][theverge.com/23778253/who-killed-google-reader]]
-
-+ [[https://aaronparecki.com/2018/04/20/46/indieweb-reader-my-new-home-on-the-internet][aaronparecki.com/2018/04/20/46/indieweb-reader-my-new-home-on-the-internet]]
-
 + Pyrex
+
+* Preguntas?
